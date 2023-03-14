@@ -4,18 +4,17 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int cursor = 0;
-    static List<Character> list = new LinkedList<>();
+    static Stack<Character> rightStack = new Stack<>();
+    static Stack<Character> leftStack = new Stack<>();
+
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        // Scanner scanner = new Scanner(System.in);
         String s = br.readLine();
 
         for (char c : s.toCharArray()) {
-            list.add(c);
+            leftStack.add(c);
         }
-        cursor = list.size();
 
         int cmdCount = Integer.parseInt(br.readLine());
         for (int i = 0; i < cmdCount; i++) {
@@ -27,8 +26,11 @@ public class Main {
             verifyCommand(cmd.charAt(0), c);
         }
         StringBuilder sb = new StringBuilder();
-        for (char ch : list) {
+        for (char ch : leftStack) {
             sb.append(ch);
+        }
+        while (!rightStack.isEmpty()) {
+            sb.append(rightStack.pop());
         }
         System.out.println(sb);
         br.close();
@@ -36,24 +38,22 @@ public class Main {
 
     static void verifyCommand(char cmd, char str) {
         if (cmd == 'L') {
-            if (cursor == 0) {
+            if (leftStack.isEmpty()) {
                 return;
             }
-            cursor--;
+            rightStack.add(leftStack.pop());
         } else if (cmd == 'D') {
-            if (cursor == list.size()) {
+            if (rightStack.isEmpty()) {
                 return;
             }
-            cursor++;
+            leftStack.add(rightStack.pop());
         } else if (cmd == 'B') {
-            if (cursor == 0) {
+            if (leftStack.isEmpty()) {
                 return;
             }
-            list.remove(cursor - 1);
-            cursor--;
+            leftStack.pop();
         } else if (cmd == 'P') {
-            list.add(cursor == 0 ? 0 : cursor, str);
-            cursor++;
+            leftStack.add(str);
         }
         return;
     }

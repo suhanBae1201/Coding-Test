@@ -42,3 +42,4 @@ src/test/resources/application.yml
 Log
 src/main/resources/application-dev-coupon-1.yml
 src/main/java/programmers/GIT
+src/main/java/codility/street11

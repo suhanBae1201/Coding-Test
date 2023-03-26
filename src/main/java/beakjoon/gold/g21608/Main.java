@@ -14,12 +14,12 @@ public class Main {
 
         // 입력단 - 순서를 지켜서 배열을 돌리기 위해 큐 사용
         Queue<Student> studentQueue = new LinkedList<>();
-        Map<Integer, int[]> resultMap = new HashMap<>();
+        Map<Integer, List<Integer>> resultMap = new HashMap<>();
         for (int i = 0; i < N * N; i++) {
             int target = sc.nextInt();
-            int[] loves = new int[4];
+            List<Integer> loves = new ArrayList<>();
             for (int j = 0; j < 4; j++) {
-                loves[j] = sc.nextInt();
+                loves.add(sc.nextInt());
             }
             studentQueue.add(new Student(target, loves));
             resultMap.put(target, loves);
@@ -32,6 +32,37 @@ public class Main {
             int[][] blankArray = new int[N][N];
 
             Student student = studentQueue.poll();
+
+            Info max = new Info(0, 0, N, N);
+
+            for (int i = 0; i < N; i++) {
+                for (int j = 0; j < N; j++) {
+                    if (answerArray[i][j] != 0) {
+                        continue;
+                    }
+
+                    int loveCnt = 0;
+                    int blankCnt = 0;
+
+                    for (int dir = 0; dir < 4; dir++) {
+                        int nx = j + dx[dir];
+                        int ny = i + dy[dir];
+                        if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
+
+                        if (answerArray[ny][nx] == 0) {
+                            blankCnt++;
+                        } else if (student.loves.contains(answerArray[ny][nx])) {
+                            loveCnt++;
+                        }
+                    }
+
+                    if (loveCnt > max.loveCnt) {
+
+                    }
+
+
+                }
+            }
 
             // 해당 학생이 좋아하는 학생이 주변에 최대 몇명 있는지 찾기
             int loveMax = getLoveMax(N, loveArray, student);
@@ -62,7 +93,7 @@ public class Main {
             }
         }
 
-//        System.out.println(Arrays.deepToString(answerArray));
+        System.out.println(Arrays.deepToString(answerArray));
 
 
 
@@ -75,12 +106,12 @@ public class Main {
                 int loveCnt = 0;
                 for (int next = 0; next < 4; next++) {
                     for (int dir = 0; dir < 4; dir++) {
-                        int nx = i + dx[dir];
-                        int ny = j + dy[dir];
+                        int nx = j + dx[dir];
+                        int ny = i + dy[dir];
 
                         if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
 
-                        if (loves[next] == answerArray[nx][ny]) {
+                        if (loves[next] == answerArray[ny][nx]) {
                             loveCnt++;
                             break;
                         }
@@ -110,8 +141,8 @@ public class Main {
                 for (int j = 0; j < N; j++) {
                     // 상하좌우를 돌면서 주변에 비어있는 칸 갯수 카운트
                     for (int dir = 0; dir < 4; dir++) {
-                        int nx = i + dx[dir];
-                        int ny = j + dy[dir];
+                        int nx = j + dx[dir];
+                        int ny = i + dy[dir];
 
                         if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
                             continue;
@@ -121,7 +152,7 @@ public class Main {
                             continue;
                         }
 
-                        if (answerArray[nx][ny] == 0) {
+                        if (answerArray[ny][nx] == 0) {
                             blankArray[i][j]++;
                             blankMax = Math.max(blankArray[i][j], blankMax);
                         }
@@ -138,8 +169,8 @@ public class Main {
                 int i = poll.x;
                 int j = poll.y;
                 for (int dir = 0; dir < 4; dir++) {
-                    int nx = i + dx[dir];
-                    int ny = j + dy[dir];
+                    int nx = j + dx[dir];
+                    int ny = i + dy[dir];
 
                     if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
                         continue;
@@ -149,7 +180,7 @@ public class Main {
                         continue;
                     }
 
-                    if (answerArray[nx][ny] == 0) {
+                    if (answerArray[ny][nx] == 0) {
                         blankArray[i][j]++;
                         if (blankArray[i][j] >= blankMax) {
                             blankMax = blankArray[i][j];
@@ -191,12 +222,12 @@ public class Main {
                 int[] loves = student.loves;
                 for (int next = 0; next < 4; next++) {
                     for (int dir = 0; dir < 4; dir++) {
-                        int nx = i + dx[dir];
-                        int ny = j + dy[dir];
+                        int nx = j + dx[dir];
+                        int ny = i + dy[dir];
 
                         if (nx < 0 || nx >= N || ny < 0 || ny >= N) continue;
 
-                        if (loves[next] == answerArray[nx][ny]) {
+                        if (loves[next] == answerArray[ny][nx]) {
                             loveArray[i][j]++;
                             loveMax = Math.max(loveArray[i][j], loveMax);
                             break;
@@ -217,11 +248,23 @@ public class Main {
         }
     }
 
+    static class Info{
+        //blank : 인접 빈 칸, favoriteCount : 인접 좋아하는 친구
+        int blank, loveCnt, x, y;
+        //생성자
+        public Info(int blank, int loveCnt, int x, int y){
+            this.blank = blank;
+            this.loveCnt = loveCnt;
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     static class Student {
         int myNum;
-        int[] loves;
+        List<Integer> loves;
 
-        public Student(int myNum, int[] loves) {
+        public Student(int myNum, List<Integer> loves) {
             this.myNum = myNum;
             this.loves = loves;
         }
